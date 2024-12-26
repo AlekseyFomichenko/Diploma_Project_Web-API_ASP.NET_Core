@@ -2,7 +2,7 @@
 {
     public partial class Role
     {
-        public UseRole Id { get; set; }
+        public UserRole RoleType { get; set; }
         public string Name { get; set; }
         public List<UserEntity> Users { get; set; }
     }

@@ -4,8 +4,8 @@
     {
          public Guid Id { get; set; }
         public string Login { get; set; }
-        public byte[] Password { get; set; }
-        public UseRole RoleId { get; set; }
+        public string Password { get; set; }
+        public UserRole RoleType { get; set; }
         public virtual Role Role { get; set; }
     }
 }

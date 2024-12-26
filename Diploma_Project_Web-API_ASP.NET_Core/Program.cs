@@ -1,4 +1,9 @@
 
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Diploma_Project_Web_API_ASP.NET_Core.Abstractions;
+using Diploma_Project_Web_API_ASP.NET_Core.DataStore.Entity;
+using Diploma_Project_Web_API_ASP.NET_Core.DataStore.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -18,6 +23,7 @@ namespace Diploma_Project_Web_API_ASP.NET_Core
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddSwaggerGen(opt =>
             {
                 opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -43,6 +49,11 @@ namespace Diploma_Project_Web_API_ASP.NET_Core
                         new string[]{}
                     }
                 });
+            });
+            builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+            builder.Host.ConfigureContainer<ContainerBuilder>(webBuilder =>
+            {
+                webBuilder.Register(c => new AppDbContext(builder.Configuration.GetConnectionString("DefaultConnection"))).InstancePerDependency();
             });
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o =>

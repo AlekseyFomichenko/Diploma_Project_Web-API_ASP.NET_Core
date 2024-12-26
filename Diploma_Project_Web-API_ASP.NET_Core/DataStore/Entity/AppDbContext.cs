@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client.Extensions.Msal;
 
 namespace Diploma_Project_Web_API_ASP.NET_Core.DataStore.Entity
 {
@@ -15,8 +14,8 @@ namespace Diploma_Project_Web_API_ASP.NET_Core.DataStore.Entity
             _connectingString = connectionString;
         }
 
-        DbSet<UserEntity> Users {  get; set; }
-        DbSet<Role> Roles { get; set; }
+        public DbSet<UserEntity> Users {  get; set; }
+        public DbSet<Role> Roles { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
@@ -41,7 +40,7 @@ namespace Diploma_Project_Web_API_ASP.NET_Core.DataStore.Entity
             });
             modelBuilder.Entity<Role>(entity =>
             {
-                entity.HasKey(x => x.Id);
+                entity.HasKey(x => x.RoleType);
                 entity.HasIndex(x => x.Name).IsUnique();
             });
         }
