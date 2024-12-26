@@ -16,8 +16,8 @@ namespace OAuth
             .AddCookie("External")
         .AddGoogle(googleOptions =>
             {
-                googleOptions.ClientId = "348884887638-qemc0vvlo5qqomthsbe8iq93hmrnd709.apps.googleusercontent.com";
-                googleOptions.ClientSecret = "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";
+                googleOptions.ClientId = "55413905616-bl35imijk0i2g10m84jn0dqfa0dakha9.apps.googleusercontent.com";
+                googleOptions.ClientSecret = "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";
             });
             var app = builder.Build();
 

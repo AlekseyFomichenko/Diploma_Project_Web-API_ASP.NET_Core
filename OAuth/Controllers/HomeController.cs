@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using OAuth.Models;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace OAuth.Controllers
 {
@@ -15,6 +16,9 @@ namespace OAuth.Controllers
 
         public IActionResult Index()
         {
+            var name = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
+            if (name == null) ViewBag.UserName = "Unknown";
+            else ViewBag.UserName = name.Value;
             return View();
         }
 
