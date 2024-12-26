@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Diploma_Project_Web-API_ASP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService", "UserService\UserService.csproj", "{FC85B420-317E-46CF-8472-6BDCE4D554F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuth", "OAuth\OAuth.csproj", "{A4BD67F3-99BD-4BDE-8864-DDC278006028}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{FC85B420-317E-46CF-8472-6BDCE4D554F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC85B420-317E-46CF-8472-6BDCE4D554F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC85B420-317E-46CF-8472-6BDCE4D554F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4BD67F3-99BD-4BDE-8864-DDC278006028}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4BD67F3-99BD-4BDE-8864-DDC278006028}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4BD67F3-99BD-4BDE-8864-DDC278006028}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4BD67F3-99BD-4BDE-8864-DDC278006028}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
