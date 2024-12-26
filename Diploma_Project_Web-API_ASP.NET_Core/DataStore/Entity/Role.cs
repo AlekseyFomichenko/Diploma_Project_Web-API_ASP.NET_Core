@@ -4,6 +4,6 @@
     {
         public UserRole RoleType { get; set; }
         public string Name { get; set; }
-        public List<UserEntity> Users { get; set; }
+        public virtual List<UserEntity> Users { get; set; }
     }
 }
