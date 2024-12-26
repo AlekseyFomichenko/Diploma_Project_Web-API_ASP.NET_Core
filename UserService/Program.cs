@@ -8,11 +8,19 @@ using System;
 using UserService.Interfaces;
 using UserService.Models;
 using Microsoft.OpenApi.Models;
+using System.Security.Cryptography;
 
 namespace UserService
 {
     public class Program
     {
+        static RSA GetPublicKey()
+        {
+            var f = File.ReadAllText("rsa.public_key.pem");
+            var rsa = RSA.Create();
+            rsa.ImportFromPem(f);
+            return rsa;
+        }
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);

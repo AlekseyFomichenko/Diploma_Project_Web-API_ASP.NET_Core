@@ -2,12 +2,23 @@
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using UserService.Interfaces;
 using UserService.Models;
 
 namespace UserService.Controllers
 {
+    public static class RsaTools
+    {
+        public static RSA GetPrivateKey()
+        {
+            var f = File.ReadAllText("rsa.private_key.pem");
+            var rsa = RSA.Create();
+            rsa.ImportFromPem(f);
+            return rsa;
+        }
+    }
     [ApiController]
     [Route("[controller]")]
     public class LoginController : ControllerBase
@@ -34,8 +45,9 @@ namespace UserService.Controllers
         }
         private string GenerateToken(UserModel user)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            //var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var key = new RsaSecurityKey(RsaTools.GetPrivateKey());
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256Signature);
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UserName),
