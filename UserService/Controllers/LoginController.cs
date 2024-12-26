@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using UserService.Db;
 using UserService.Interfaces;
 using UserService.Models;
 
@@ -25,23 +27,49 @@ namespace UserService.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly IUserAuthService _userAuthService;
+        private readonly IUserRepo _userRepo;
 
-        public LoginController(IConfiguration configuration, IUserAuthService userAuthService)
+        private static UserRole RoleToUserRole(RoleId id)
+        {
+            return id == RoleId.Admin ? UserRole.Admin : UserRole.User;
+        }
+        public LoginController(IConfiguration configuration, IUserAuthService userAuthService, IUserRepo userRepo)
         {
             _configuration = configuration;
             _userAuthService = userAuthService;
+            _userRepo = userRepo;
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("AddUser")]
+        public IActionResult AddUser([FromBody] LoginModel userModel)
+        {
+            try
+            {
+                _userRepo.UserAdd(userModel.Name, userModel.Password, Db.RoleId.User);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+            return Ok();
         }
 
         [HttpPost]
         public IActionResult LogIn([FromBody] LoginModel userModel)
         {
-            var user = _userAuthService.Authenticate(userModel);
-            if (user != null)
+            try
             {
+                var roleId = _userRepo.UserCheck(userModel.Name, userModel.Password);
+                var user = new UserModel { UserName = userModel.Name, Role = RoleToUserRole(roleId)};
                 var token = GenerateToken(user);
                 return Ok(token);
             }
-            return NotFound("User not found");
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
         private string GenerateToken(UserModel user)
         {

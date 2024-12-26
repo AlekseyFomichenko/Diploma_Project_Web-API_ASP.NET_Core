@@ -9,6 +9,7 @@ using UserService.Interfaces;
 using UserService.Models;
 using Microsoft.OpenApi.Models;
 using System.Security.Cryptography;
+using UserService.Repo;
 
 namespace UserService
 {
@@ -31,6 +32,7 @@ namespace UserService
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddTransient<IUserAuthService, AuthMock>();
+            builder.Services.AddTransient<IUserRepo, UserRepository>();
             builder.Services.AddSwaggerGen(opt =>
             {
                 opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
