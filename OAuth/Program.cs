@@ -16,8 +16,8 @@ namespace OAuth
             .AddCookie("External")
         .AddGoogle(googleOptions =>
             {
-                googleOptions.ClientId = "55413905616-bl35imijk0i2g10m84jn0dqfa0dakha9.apps.googleusercontent.com";
-                googleOptions.ClientSecret = "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";
+                googleOptions.ClientId = ""; // Удалил, так как в лекции сказали не светить этими данными.
+                googleOptions.ClientSecret = "";
             });
             var app = builder.Build();
 
