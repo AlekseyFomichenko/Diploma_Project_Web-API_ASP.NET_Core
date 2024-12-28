@@ -1,5 +1,8 @@
-﻿namespace MessageService.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MessageService.Models
 {
+    [Table("Users")]
     public class User
     {
         public int Id { get; set; }
