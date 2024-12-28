@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAuth", "OAuth\OAuth.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageService", "MessageService\MessageService.csproj", "{870E8DFB-17B1-4AA7-B56E-304D26CCCC8F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{388ECF38-A876-4242-A5E4-774553AAECA4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{870E8DFB-17B1-4AA7-B56E-304D26CCCC8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{870E8DFB-17B1-4AA7-B56E-304D26CCCC8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{870E8DFB-17B1-4AA7-B56E-304D26CCCC8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{388ECF38-A876-4242-A5E4-774553AAECA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{388ECF38-A876-4242-A5E4-774553AAECA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{388ECF38-A876-4242-A5E4-774553AAECA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{388ECF38-A876-4242-A5E4-774553AAECA4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
