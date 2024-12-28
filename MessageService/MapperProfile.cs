@@ -4,9 +4,9 @@ using MessageService.Models;
 
 namespace MessageService
 {
-    public class MapperProfiles : Profile
+    public class MapperProfile : Profile
     {
-        public MapperProfiles()
+        public MapperProfile()
         {
             CreateMap<Message, MessageDTO>(MemberList.Destination).ReverseMap();
         }

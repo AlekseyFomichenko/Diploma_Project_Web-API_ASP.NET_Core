@@ -1,5 +1,10 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using MessageService.Repo;
+using MessageService.Interfaces;
+using MessageService;
 
-namespace MessageService
+namespace MessageManager
 {
     public class Program
     {
@@ -14,6 +19,14 @@ namespace MessageService
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> add config
+            builder.Services.AddAutoMapper(typeof(MapperProfile));
+            builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+            builder.Host.ConfigureContainer<ContainerBuilder>(contaierBuilder =>
+            {
+                contaierBuilder.RegisterType<MessageRepo>().As<IMessageRepo>();
+            });
+            //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
