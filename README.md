@@ -16,5 +16,6 @@
 - **ASP.NET Core 5**
 - **Entity Framework Core**
 - **SQL Server**
+- **Postgre SQL**
 - **Swagger UI**
 - **Docker**
