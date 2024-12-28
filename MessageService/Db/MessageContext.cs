@@ -15,8 +15,7 @@ namespace MessageService.Db
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder
-        .LogTo(Console.WriteLine)
-        .UseNpgsql(_connectingString);
+        .UseSqlServer(_connectingString).UseLazyLoadingProxies();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
