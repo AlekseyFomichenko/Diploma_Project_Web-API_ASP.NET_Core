@@ -5,18 +5,20 @@ RESTful веб-сервис для обмена сообщениями межд�
 ## Технологии
 
 - **.NET 8** (несколько приложений в одном решении)
+- **Ocelot** (API Gateway), **MMLib.SwaggerForOcelot** (единый Swagger для Gateway)
 - **PostgreSQL** (хранение пользователей и сообщений)
 - **JWT, подпись RSA** (аутентификация)
 - **Autofac** (DI в UserService)
 - **AutoMapper** (DTO и Entity в MessageService)
 - **xUnit** (тестирование)
-- **Swagger UI** (проверка API)
+- **Swagger UI** (проверка API на каждом сервисе и агрегация на Gateway)
 
 ## Структура решения
 
-- `src/UserService` — регистрация, вход по email и паролю, выдача JWT
-- `src/MessageService` — отправка и получение сообщений (по UserID из JWT)
-- `src/OAuth` — вход через Google и обмен code на JWT (exchange-flow)
+- `src/ApiGateway` — API Gateway (Ocelot): единая точка входа для UserService и MessageService, Swagger для обоих сервисов (порт 6000)
+- `src/UserService` — регистрация, вход по email и паролю, выдача JWT (порт 5103)
+- `src/MessageService` — отправка и получение сообщений (по UserID из JWT) (порт 5003)
+- `src/OAuth` — вход через Google и обмен code на JWT (exchange-flow) (порт 5187)
 - `tests/UnitTest` — модульные и интеграционные тесты
 - `docs/` — PRD и планы
 
@@ -28,6 +30,7 @@ RESTful веб-сервис для обмена сообщениями межд�
 - Хранение паролей: **SHA512 + salt** (RSA только для подписи JWT)
 - Роли: Admin / User (не более одного Admin)
 - JWT с claims: **UserID** (числовой), Role
+- **Методы API:** добавить администратора (первый пользователь) — `POST /Login/AddAdmin`; добавить пользователя — `POST /Login/AddUser`; вход — `POST /Login`; получить список пользователей (только Admin) — `GET /api/Users`; удалить пользователя (только Admin, нельзя удалить себя) — `DELETE /api/Users/{id}`; метод, возвращающий ID по JWT — `GET /Restricted/Me` (ответ `{ "userId", "role" }`); для OAuth — `POST /api/Users/google-ensure`.
 
 ### Сервис сообщений (MessageService)
 
@@ -62,11 +65,12 @@ RESTful веб-сервис для обмена сообщениями межд�
    dotnet ef database update --project src/UserService
    ```
 
-5. Запуск:
-   - UserService: `dotnet run --project src/UserService`
-   - MessageService: `dotnet run --project src/MessageService`
-   - OAuth: `dotnet run --project src/OAuth`  
-   В `src/OAuth/appsettings.json` указать `UserService:BaseUrl` и `ClientRedirectUri` (куда редиректить с `?code=...` после Google).
+5. Запуск (в указанном порядке):
+   - UserService: `dotnet run --project src/UserService` (http://localhost:5103)
+   - MessageService: `dotnet run --project src/MessageService` (http://localhost:5003)
+   - ApiGateway: `dotnet run --project src/ApiGateway` (http://localhost:6000)
+   - OAuth (по необходимости): `dotnet run --project src/OAuth` (http://localhost:5187)  
+   Клиенты обращаются к API пользователей и сообщений через **http://localhost:6000** (Gateway); Swagger доступен по http://localhost:6000/swagger. OAuth — по своему URL (прямой доступ). В `src/OAuth/appsettings.json` указать `UserService:BaseUrl` и `ClientRedirectUri` (куда редиректить с `?code=...` после Google).
 
 ## Тестирование
 
@@ -86,9 +90,13 @@ public void MockMessageRepo_SendMessage_AddsMessage()
 }
 ```
 
-Пример вызова API (Login по email, MessageManager с JWT):
-- Регистрация: `POST /Login/AddUser` — body `{ "email": "...", "password": "..." }`
-- Вход: `POST /Login` — body `{ "email": "...", "password": "..." }` → в ответе `{ "token": "..." }`
-- Сообщения: `GET /api/MessageManager/GetMessages` и `POST /api/MessageManager/SendMessage` с заголовком `Authorization: Bearer <token>`, тело отправки: `{ "text": "...", "receiverId": 2 }`
+Пример вызова API через Gateway (http://localhost:6000; Login по email, MessageManager с JWT):
+- Первый пользователь (админ): `POST http://localhost:6000/Login/AddAdmin` — body `{ "email": "...", "password": "..." }`
+- Регистрация: `POST http://localhost:6000/Login/AddUser` — body `{ "email": "...", "password": "..." }`
+- Вход: `POST http://localhost:6000/Login` — body `{ "email": "...", "password": "..." }` → в ответе `{ "token": "..." }`
+- ID по JWT: `GET http://localhost:6000/Restricted/Me` с заголовком `Authorization: Bearer <token>` → `{ "userId": 1, "role": "Admin" }`
+- Список пользователей (Admin): `GET http://localhost:6000/api/Users` с заголовком `Authorization: Bearer <token>`
+- Удалить пользователя (Admin): `DELETE http://localhost:6000/api/Users/{id}` с заголовком `Authorization: Bearer <token>`
+- Сообщения: `GET http://localhost:6000/api/MessageManager/GetMessages` и `POST http://localhost:6000/api/MessageManager/SendMessage` с заголовком `Authorization: Bearer <token>`, тело отправки: `{ "text": "...", "receiverId": 2 }`
 
 Подробнее: [docs/PRD.md](docs/PRD.md).

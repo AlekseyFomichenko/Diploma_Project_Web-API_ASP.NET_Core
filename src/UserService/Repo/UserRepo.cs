@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using UserService.Db;
 using UserService.Interfaces;
+using UserService.Models;
 
 namespace UserService.Repo
 {
@@ -16,6 +17,9 @@ namespace UserService.Repo
 
         public void UserAdd(string email, string password, RoleId roleId)
         {
+            if (_context.Users.Any(x => x.Email == email))
+                throw new Exception("User with this email already exists");
+
             int adminCount = 0;
             if (roleId == RoleId.Admin)
                 adminCount = _context.Users.Count(x => x.RoleId == RoleId.Admin);
@@ -27,6 +31,26 @@ namespace UserService.Repo
                 Email = email,
                 Name = email,
                 RoleId = roleId,
+                Salt = new byte[16]
+            };
+            Random.Shared.NextBytes(user.Salt);
+            var data = Encoding.ASCII.GetBytes(password).Concat(user.Salt).ToArray();
+            user.Password = SHA512.HashData(data);
+
+            _context.Add(user);
+            _context.SaveChanges();
+        }
+
+        public void AddAdmin(string email, string password)
+        {
+            if (_context.Users.Any())
+                throw new Exception("First user (admin) already exists");
+
+            var user = new User
+            {
+                Email = email,
+                Name = email,
+                RoleId = RoleId.Admin,
                 Salt = new byte[16]
             };
             Random.Shared.NextBytes(user.Salt);
@@ -67,6 +91,26 @@ namespace UserService.Repo
             _context.Add(newUser);
             _context.SaveChanges();
             return (newUser.Id, newUser.RoleId);
+        }
+
+        public IEnumerable<UserListItem> GetAllUsers()
+        {
+            return _context.Users.Select(u => new UserListItem
+            {
+                Id = u.Id,
+                Email = u.Email,
+                Name = u.Name,
+                Role = u.RoleId == RoleId.Admin ? "Admin" : "User"
+            }).ToList();
+        }
+
+        public void DeleteUser(int userId)
+        {
+            var user = _context.Users.Find(userId);
+            if (user == null)
+                throw new Exception("User not found");
+            _context.Users.Remove(user);
+            _context.SaveChanges();
         }
     }
 }

@@ -53,8 +53,19 @@ namespace UserService
             });
 
             var rsaPublicPath = builder.Configuration["Jwt:RsaPublicKeyPath"] ?? "rsa/public_key.pem";
+            if (!Path.IsPathRooted(rsaPublicPath))
+            {
+                var baseDir = Path.GetDirectoryName(typeof(Program).Assembly.Location) ?? AppContext.BaseDirectory;
+                rsaPublicPath = Path.Combine(baseDir, rsaPublicPath.Replace('/', Path.DirectorySeparatorChar));
+            }
+            var pemContent = File.ReadAllText(rsaPublicPath, System.Text.Encoding.UTF8);
+            if (pemContent.Length > 0 && pemContent[0] == '\uFEFF')
+                pemContent = pemContent[1..];
+            pemContent = pemContent.Trim();
+            if (!pemContent.StartsWith("-----BEGIN", StringComparison.Ordinal))
+                throw new InvalidOperationException($"JWT RSA public key file does not contain valid PEM: {rsaPublicPath}");
             var publicKey = RSA.Create();
-            publicKey.ImportFromPem(File.ReadAllText(rsaPublicPath));
+            publicKey.ImportFromPem(pemContent);
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o =>
             {

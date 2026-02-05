@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Db;
@@ -17,6 +18,35 @@ namespace UserService.Controllers
         {
             _userRepo = userRepo;
             _jwtTokenService = jwtTokenService;
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public IActionResult GetUsers()
+        {
+            var list = _userRepo.GetAllUsers();
+            return Ok(list);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public IActionResult DeleteUser(int id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim != null && int.TryParse(userIdClaim, out var currentUserId) && currentUserId == id)
+                return BadRequest("Administrator cannot delete themselves");
+
+            try
+            {
+                _userRepo.DeleteUser(id);
+            }
+            catch (Exception e)
+            {
+                if (e.Message == "User not found")
+                    return NotFound(e.Message);
+                return StatusCode(500, e.Message);
+            }
+            return NoContent();
         }
 
         [AllowAnonymous]

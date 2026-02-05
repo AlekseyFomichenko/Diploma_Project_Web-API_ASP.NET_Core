@@ -30,17 +30,19 @@
 
 ## 3. Архитектура
 
-Три приложения в одном решении (solution):
+Четыре приложения в одном решении (solution):
 
 ```
 Solution
+├── ApiGateway     — единая точка входа (Ocelot), маршрутизация на UserService и MessageService, Swagger для обоих
 ├── UserService    — регистрация, вход (email + пароль), выдача JWT (RSA)
 ├── MessageService — отправка/получение сообщений, фильтр по получателю, прочтение при GetMessages
 └── OAuth          — вход через Google (отдельное веб-приложение с UI)
 ```
 
-- **UserService** и **MessageService** — REST API (JSON), Swagger, отдельные порты.
-- **OAuth** — MVC-приложение с страницами и редиректами Google; после входа через Google выдаёт JWT через **exchange-flow** (см. ниже).
+- **Доступ к сервисам** организуется через **API Gateway** (Ocelot): клиенты обращаются к Gateway (порт 6000), который проксирует запросы к UserService (5103) и MessageService (5003). Swagger на Gateway объединяет документацию обоих сервисов (Swagger for Ocelot).
+- **UserService** и **MessageService** — REST API (JSON), Swagger на своих портах; при работе через Gateway запросы идут через него.
+- **OAuth** — MVC-приложение с страницами и редиректами Google; доступ к OAuth — **прямой** (не через Gateway); после входа через Google выдаёт JWT через **exchange-flow** (см. ниже).
 - Пользователи (email, пароль, роли) хранятся только в **UserService** (одна БД). JWT содержит **числовой UserID** и Role.
 - **MessageService** не хранит пользователей: проверяет JWT и использует UserID из токена. Сообщения хранятся с полями **SenderId**, **ReceiverId** (int).
 
@@ -90,7 +92,7 @@ sequenceDiagram
 ## 4. Структура папок
 
 - Корень: `.sln`, `README.md`, `docs/`
-- `src/UserService/`, `src/MessageService/`, `src/OAuth/`
+- `src/ApiGateway/`, `src/UserService/`, `src/MessageService/`, `src/OAuth/`
 - `tests/UnitTest/`
 - `docs/` — документация и планы
 
@@ -124,7 +126,7 @@ sequenceDiagram
 - Стек: .NET 8, PostgreSQL, JWT (RSA), Autofac, AutoMapper (MessageService), xUnit, Swagger.
 - Аутентификация: email + пароль; OAuth (Google) — отдельно.
 - Пароли: хэширование SHA512 + salt; RSA только для JWT.
-- Установка: клонирование, настройка PostgreSQL (в т.ч. контейнер), конфиг, запуск UserService, MessageService, при необходимости OAuth.
+- Установка: клонирование, настройка PostgreSQL (в т.ч. контейнер), конфиг, запуск UserService, MessageService, ApiGateway, при необходимости OAuth.
 - Примеры тестов: реальные эндпоинты и модели (MessageManager, Login и т.д.).
 
 ---

@@ -22,7 +22,7 @@ namespace OAuth
             .AddCookie("External")
         .AddGoogle(googleOptions =>
             {
-                googleOptions.ClientId = ""; // ������, ��� ��� � ������ ������� �� ������� ����� �������.
+                googleOptions.ClientId = ""; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
                 googleOptions.ClientSecret = "";
             });
             var app = builder.Build();

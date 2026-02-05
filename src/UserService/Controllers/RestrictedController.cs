@@ -25,6 +25,18 @@ namespace UserService.Controllers
             var currentUser = GetCurrentUser();
             return currentUser == null ? Unauthorized() : Ok($"Hi you are an {currentUser.Role}");
         }
+
+        [HttpGet]
+        [Route("Me")]
+        [Authorize(Roles = "Admin, User")]
+        public IActionResult Me()
+        {
+            var currentUser = GetCurrentUser();
+            if (currentUser == null)
+                return Unauthorized();
+            return Ok(new { userId = currentUser.UserId, role = currentUser.Role.ToString() });
+        }
+
         private UserModel? GetCurrentUser()
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;

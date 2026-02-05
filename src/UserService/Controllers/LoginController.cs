@@ -34,6 +34,27 @@ namespace UserService.Controllers
             }
             catch (Exception e)
             {
+                if (e.Message.Contains("already exists"))
+                    return Conflict(e.Message);
+                return StatusCode(500, e.Message);
+            }
+            return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("AddAdmin")]
+        public IActionResult AddAdmin([FromBody] LoginModel userModel)
+        {
+            if (string.IsNullOrEmpty(userModel.Email) || string.IsNullOrEmpty(userModel.Password))
+                return BadRequest("Email and Password required");
+            try
+            {
+                _userRepo.AddAdmin(userModel.Email, userModel.Password);
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("already exists"))
+                    return Conflict(e.Message);
                 return StatusCode(500, e.Message);
             }
             return Ok();
