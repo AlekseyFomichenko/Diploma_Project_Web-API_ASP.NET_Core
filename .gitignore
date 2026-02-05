@@ -9,6 +9,8 @@
 *.user
 *.userosscache
 *.sln.docstates
+/docs/соответствие_ТЗ.md
+/docs/план_исправления_проекта_660c18dd.plan.md
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

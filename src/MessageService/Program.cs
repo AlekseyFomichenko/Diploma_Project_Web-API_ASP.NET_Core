@@ -72,7 +72,7 @@ builder.Services.AddSingleton<IMapper>(mapperConfig.CreateMapper());
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<MessageContext>();
-                db.Database.EnsureCreated();
+                db.Database.Migrate();
             }
             if (app.Environment.IsDevelopment())
             {
