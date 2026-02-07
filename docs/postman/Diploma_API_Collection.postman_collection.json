@@ -1,0 +1,142 @@
+{
+  "info": {
+    "name": "Diploma API (Gateway)",
+    "description": "Коллекция для тестирования UserService и MessageService через API Gateway.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "UserService",
+      "item": [
+        {
+          "name": "AddAdmin",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"Admin1!\"\n}"
+            },
+            "url": "{{baseUrl}}/Login/AddAdmin",
+            "description": "Добавить первого администратора (только если в БД 0 пользователей)."
+          }
+        },
+        {
+          "name": "AddUser",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"User1!\",\n  \"name\": \"User\"\n}"
+            },
+            "url": "{{baseUrl}}/Login/AddUser",
+            "description": "Регистрация пользователя (email, password; name опционально)."
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json && json.token) {",
+                  "    pm.environment.set('token', json.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"Admin1!\"\n}"
+            },
+            "url": "{{baseUrl}}/Login",
+            "description": "Вход по email и паролю. Токен сохраняется в переменную окружения и подставляется в последующие запросы."
+          }
+        },
+        {
+          "name": "Get Users",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": "{{baseUrl}}/api/Users",
+            "description": "Список пользователей (только для роли Admin)."
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": "{{baseUrl}}/api/Users/2",
+            "description": "Удалить пользователя по id (только Admin; нельзя удалить себя)."
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": "{{baseUrl}}/Restricted/Me",
+            "description": "Текущий пользователь по JWT (userId, role)."
+          }
+        },
+        {
+          "name": "Restricted Admins",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": "{{baseUrl}}/Restricted/Admins",
+            "description": "Проверка доступа (только Admin)."
+          }
+        },
+        {
+          "name": "Restricted Users",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": "{{baseUrl}}/Restricted/Users",
+            "description": "Проверка доступа (Admin или User)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "MessageService",
+      "item": [
+        {
+          "name": "GetMessages",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": "{{baseUrl}}/api/MessageManager/GetMessages",
+            "description": "Получить сообщения для текущего пользователя (receiverId из JWT)."
+          }
+        },
+        {
+          "name": "SendMessage",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Hello!\",\n  \"receiverId\": 2\n}"
+            },
+            "url": "{{baseUrl}}/api/MessageManager/SendMessage",
+            "description": "Отправить сообщение (senderId из JWT, receiverId в теле)."
+          }
+        }
+      ]
+    }
+  ]
+}
