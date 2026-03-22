@@ -22,8 +22,8 @@ namespace OAuth
             .AddCookie("External")
         .AddGoogle(googleOptions =>
             {
-                googleOptions.ClientId = ""; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
-                googleOptions.ClientSecret = "";
+                googleOptions.ClientId = "${ClientId}";
+                googleOptions.ClientSecret = "${ClientSecret}";
             });
             var app = builder.Build();
 

@@ -1,6 +1,7 @@
 # Проект Веб-API на ASP.NET Core
 
 RESTful веб-сервис для обмена сообщениями между пользователями. Реализован на ASP.NET Core в рамках дипломной работы по курсу C#-разработки.
+Более подробно с тех. заданием и структурой проекта вы можете ознакомиться в [PRD](docs\PRD.md) и [Техническое задание](docs\техническое_задание.md)
 
 ## Технологии
 
@@ -47,39 +48,38 @@ RESTful веб-сервис для обмена сообщениями межд�
 ## Установка
 
 1. Клонировать репозиторий:
-   ```bash
+  ```bash
    git clone https://github.com/AlekseyFomichenko/Diploma_Project_Web-API_ASP.NET_Core.git
    cd Diploma_Project_Web-API_ASP.NET_Core
-   ```
-
+  ```
 2. Запустить PostgreSQL (например, в контейнере) и задать строки подключения в:
-   - `src/UserService/appsettings.json` — `ConnectionStrings:DefaultConnection`
-   - `src/MessageService/appsettings.json` — `ConnectionStrings:DefaultConnection`
-
+  - `src/UserService/appsettings.json` — `ConnectionStrings:DefaultConnection`
+  - `src/MessageService/appsettings.json` — `ConnectionStrings:DefaultConnection`
 3. Ключи RSA для JWT:
-   - **UserService** (`src/UserService/rsa/`): `private_key.pem` (подпись JWT) и при необходимости `public_key.pem` (проверка своих API).
-   - **MessageService**, **OAuth** и др.: только копия `public_key.pem` (проверка подписи). Приватный ключ — только в UserService. Подробнее: `docs/PRD.md`, раздел «Безопасность: JWT и ключи».
-
+  - **UserService** (`src/UserService/rsa/`): `private_key.pem` (подпись JWT) и при необходимости `public_key.pem` (проверка своих API).
+  - **MessageService**, **OAuth** и др.: только копия `public_key.pem` (проверка подписи). Приватный ключ — только в UserService. Подробнее: `docs/PRD.md`, раздел «Безопасность: JWT и ключи».
 4. При необходимости применить миграции UserService:
-   ```bash
+  ```bash
    dotnet ef database update --project src/UserService
-   ```
-
+  ```
 5. Запуск (в указанном порядке):
-   - UserService: `dotnet run --project src/UserService` (http://localhost:5103)
-   - MessageService: `dotnet run --project src/MessageService` (http://localhost:5003)
-   - ApiGateway: `dotnet run --project src/ApiGateway` (http://localhost:6000)
-   - OAuth (по необходимости): `dotnet run --project src/OAuth` (http://localhost:5187)  
-   Клиенты обращаются к API пользователей и сообщений через **http://localhost:6000** (Gateway); Swagger доступен по http://localhost:6000/swagger. OAuth — по своему URL (прямой доступ). В `src/OAuth/appsettings.json` указать `UserService:BaseUrl` и `ClientRedirectUri` (куда редиректить с `?code=...` после Google).
+  - UserService: `dotnet run --project src/UserService` ([http://localhost:5103](http://localhost:5103))
+  - MessageService: `dotnet run --project src/MessageService` ([http://localhost:5003](http://localhost:5003))
+  - ApiGateway: `dotnet run --project src/ApiGateway` ([http://localhost:6000](http://localhost:6000))
+  - OAuth (по необходимости): `dotnet run --project src/OAuth` ([http://localhost:5187](http://localhost:5187))  
+   Клиенты обращаются к API пользователей и сообщений через **[http://localhost:6000](http://localhost:6000)** (Gateway); Swagger доступен по [http://localhost:6000/swagger](http://localhost:6000/swagger). OAuth — по своему URL (прямой доступ). В `src/OAuth/appsettings.json` указать `UserService:BaseUrl` и `ClientRedirectUri` (куда редиректить с `?code=...` после Google).
+   **Примечание:** чтобы у себя запустить OAuth с Google, Вам нужно создать OAuth 2.0 Client в Google Cloud, прописать ClientId и ClientSecret в своём конфиге и добавить правильные redirect URI. Без этого Google выдаст ошибки вроде «ClientId must be provided» или неверный redirect.
 
 ## Тестирование
 
 Запуск тестов:
+
 ```bash
 dotnet test tests/UnitTest
 ```
 
 Пример модульного теста (мок репозитория с SenderId/ReceiverId):
+
 ```cs
 [Fact]
 public void MockMessageRepo_SendMessage_AddsMessage()
@@ -90,7 +90,8 @@ public void MockMessageRepo_SendMessage_AddsMessage()
 }
 ```
 
-Пример вызова API через Gateway (http://localhost:6000; Login по email, MessageManager с JWT):
+Пример вызова API через Gateway ([http://localhost:6000](http://localhost:6000); Login по email, MessageManager с JWT):
+
 - Первый пользователь (админ): `POST http://localhost:6000/Login/AddAdmin` — body `{ "email": "...", "password": "..." }`
 - Регистрация: `POST http://localhost:6000/Login/AddUser` — body `{ "email": "...", "password": "..." }`
 - Вход: `POST http://localhost:6000/Login` — body `{ "email": "...", "password": "..." }` → в ответе `{ "token": "..." }`

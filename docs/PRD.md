@@ -130,19 +130,3 @@ sequenceDiagram
 - Примеры тестов: реальные эндпоинты и модели (MessageManager, Login и т.д.).
 
 ---
-
-## 6. Принятые ответы (вопросы для согласования)
-
-**1. Где хранятся «пользователи» для MessageService?** — **(B)** Пользователи только в UserService; MessageService не хранит пользователей, проверяет JWT и использует UserID из токена; сообщения хранятся с SenderId, ReceiverId (int).
-
-**2. После входа через Google что получает пользователь?** — **(B)** Тот же JWT, что и UserService: OAuth вызывает UserService (google-ensure), получает JWT и выдаёт его клиенту через exchange-flow.
-
-**3. Идентификатор пользователя в JWT и в сообщениях.** — **Числовой UserID** везде (JWT claim и в сообщениях SenderId, ReceiverId).
-
-**4. Структура папок.** — Перенос в **src/** и **tests/** (src/UserService, src/MessageService, src/OAuth, tests/UnitTest).
-
----
-
-## 7. Связанные документы
-
-- [план_исправления_проекта_660c18dd.plan.md](план_исправления_проекта_660c18dd.plan.md) — пошаговый план исправлений (JWT, БД, тесты, README, docs).
